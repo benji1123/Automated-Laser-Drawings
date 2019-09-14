@@ -3,9 +3,7 @@ import subprocess
 from time import sleep
 import serial
 
-#this funtions uses terminal to auto detect attached camera
-
-
+#this funtions uses linux terminal to auto detect attached camera
 def detect_cam():
 	detect = subprocess.Popen(["gphoto2", "--auto-detect"], stdout=subprocess.PIPE)
 	print detect.communicate()[0] + "Connection Successful"
@@ -21,7 +19,7 @@ def set_iso():
 #the shutter speed as well operates using the array position, thus the value for
 #this exposure setting is 
 def set_shutter_speed():
-	ssSet = subprocess.Popen(["gphoto2", "--set-config", "shutterspeed=23"], stdout=subprocess.PIPE)
+	ssSet = subprocess.Popen(["gphoto2", "--set-config", "shutterspeed=41"], stdout=subprocess.PIPE)
 	print ssSet.communicate()[0] + "Shutter Speed Set"
 
 #simple function for triggering the capture mode of the camera
@@ -30,14 +28,15 @@ def capture():
 	print cap.communicate()[0] + "T"
 
 # file-selector
-#f = open("cameraAPI/text.txt","r")
+f = open("cameraAPI/text.txt","r")
 	
-# serial setup
-#laserElectronics = serial.Serial(
-#	port = '/dev/ttyACM0',
-#	baudrate = 9600,
-#	timeout = 5
-#)
+# serial setup; "sudo chmod 666 /dev/ttyACM0" this code has to be written on terminal
+#in order to access the port to which the arduino is connected
+laserElectronics = serial.Serial(
+	port = '/dev/ttyACM0',
+	baudrate = 9600,
+	timeout = 5
+)
 
 detect_cam()
 set_iso()
@@ -45,17 +44,17 @@ set_shutter_speed()
 capture()
 
 # transmit to Arduino
-#for line in f:
-#	laserElectronics.write(line.encode())
-#	sleep(2)
-#f.close()
+for line in f:
+	laserElectronics.write(line.encode())
+	sleep(2)
+f.close()
 
 
-#while(laserElectronics.in_waiting < 3):
- #       continue
+while(laserElectronics.in_waiting < 3):
+	continue
 
-#response = (laserElectronics.read(laserElectronics.in_waiting).decode())
+response = (laserElectronics.read(laserElectronics.in_waiting).decode())
 
-#if(response == "ACK"):
-#	print("acknowledgement received")
+if(response == "ACK"):
+	print("acknowledgement received")
 	
